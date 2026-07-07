@@ -1,58 +1,139 @@
 ## MySQL Database Design
 
-### Table : patients
+### Table: patients
 
 | Column | Data Type | Constraints |
 |---------|-----------|-------------|
-| patient_id | INT | PRIMARY KEY, AUTO_INCREMENT |
-| first_name | VARCHAR(50) | NOT NULL |
-| last_name | VARCHAR(50) | NOT NULL |
-| gender | ENUM('Male','Female','Other') | NOT NULL |
-| date_of_birth | DATE | NOT NULL |
-| phone | VARCHAR(15) | NOT NULL, UNIQUE |
-| email | VARCHAR(100) | UNIQUE |
-| address | VARCHAR(255) | |
-| created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
+| id | BIGINT | PRIMARY KEY, AUTO_INCREMENT |
+| name | VARCHAR(100) | NOT NULL |
+| email | VARCHAR(255) | NOT NULL, UNIQUE |
+| password | VARCHAR(255) | NOT NULL |
+| phone | VARCHAR(10) | NOT NULL, UNIQUE |
+| address | VARCHAR(255) | NOT NULL |
+
+#### Primary Key
+- `id`
+
+#### Foreign Keys
+- None
+
+#### Constraints
+- `id` is the primary key and is automatically generated (`AUTO_INCREMENT`).
+- `name` cannot be `NULL` and should contain **3–100 characters**.
+- `email` cannot be `NULL` and should be **UNIQUE**. Its format is validated in the application using the `@Email` annotation.
+- `password` cannot be `NULL` and should contain at least **6 characters**. Passwords should be stored as **hashed values** (e.g., BCrypt) instead of plain text.
+- `phone` cannot be `NULL`, must contain exactly **10 digits**, and should be **UNIQUE**. Its format is validated in the application using the `@Pattern` annotation.
+- `address` cannot be `NULL` and should not exceed **255 characters**.
 
 
-### Table : doctors
 
-| Column | Data Type | Constraints |
-|---------|-----------|-------------|
-| doctor_id | INT | PRIMARY KEY, AUTO_INCREMENT |
-| first_name | VARCHAR(50) | NOT NULL |
-| last_name | VARCHAR(50) | NOT NULL |
-| specialization | VARCHAR(100) | NOT NULL |
-| phone | VARCHAR(15) | NOT NULL, UNIQUE |
-| email | VARCHAR(100) | UNIQUE |
-| available | BOOLEAN | DEFAULT TRUE |
-| created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
-
-
-### Table : appointments
+### Table: doctors
 
 | Column | Data Type | Constraints |
 |---------|-----------|-------------|
-| appointment_id | INT | PRIMARY KEY, AUTO_INCREMENT |
-| patient_id | INT | NOT NULL, FOREIGN KEY REFERENCES patients(patient_id) |
-| doctor_id | INT | NOT NULL, FOREIGN KEY REFERENCES doctors(doctor_id) |
-| appointment_date | DATE | NOT NULL |
-| appointment_time | TIME | NOT NULL |
-| status | ENUM('Scheduled','Completed','Cancelled') | DEFAULT 'Scheduled' |
-| notes | TEXT | |
+| id | BIGINT | PRIMARY KEY, AUTO_INCREMENT |
+| name | VARCHAR(100) | NOT NULL |
+| specialty | VARCHAR(50) | NOT NULL |
+| email | VARCHAR(255) | NOT NULL, UNIQUE |
+| password | VARCHAR(255) | NOT NULL |
+| phone | VARCHAR(10) | NOT NULL, UNIQUE |
 
+#### Primary Key
+- `id`
 
-### Table : admin
+#### Foreign Keys
+- None
+
+#### Constraints
+- `id` is the primary key and is automatically generated (`AUTO_INCREMENT`).
+- `name` cannot be `NULL` and should contain **3–100 characters**.
+- `specialty` cannot be `NULL` and should contain **3–50 characters**.
+- `email` cannot be `NULL` and should be **UNIQUE**. Its format is validated in the application using the `@Email` annotation.
+- `password` cannot be `NULL` and should contain at least **6 characters**. Passwords should be stored as **hashed values** (e.g., BCrypt).
+- `phone` cannot be `NULL`, must contain exactly **10 digits**, and should be **UNIQUE**. Its format is validated in the application using the `@Pattern` annotation.
+
+---
+
+### Table: doctor_available_times
+
+The `availableTimes` field is annotated with `@ElementCollection`, so JPA stores it in a separate table.
 
 | Column | Data Type | Constraints |
 |---------|-----------|-------------|
-| admin_id | INT | PRIMARY KEY, AUTO_INCREMENT |
-| username | VARCHAR(50) | NOT NULL, UNIQUE |
-| password_hash | VARCHAR(255) | NOT NULL |
-| full_name | VARCHAR(100) | NOT NULL |
-| email | VARCHAR(100) | UNIQUE |
-| created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
+| doctor_id | BIGINT | NOT NULL, FOREIGN KEY REFERENCES doctors(id) |
+| available_time | VARCHAR(20) | NOT NULL |
 
+#### Primary Key
+- Composite Key: (`doctor_id`, `available_time`)
+
+#### Foreign Key
+- `doctor_id` → `doctors(id)`
+
+#### Relationship
+- One **Doctor** can have many available time slots.
+- Each available time slot belongs to one **Doctor**.
+
+
+### Table: appointments
+
+| Column | Data Type | Constraints |
+|---------|-----------|-------------|
+| id | BIGINT | PRIMARY KEY, AUTO_INCREMENT |
+| doctor_id | BIGINT | NOT NULL, FOREIGN KEY REFERENCES doctors(id) |
+| patient_id | BIGINT | NOT NULL, FOREIGN KEY REFERENCES patients(id) |
+| appointment_time | DATETIME | NOT NULL |
+| status | INT | NOT NULL |
+
+#### Primary Key
+- `id`
+
+#### Foreign Keys
+- `doctor_id` → `doctors(id)`
+- `patient_id` → `patients(id)`
+
+#### Constraints
+- `id` is the primary key and is automatically generated (`AUTO_INCREMENT`).
+- `doctor_id` cannot be `NULL`.
+- `patient_id` cannot be `NULL`.
+- `appointment_time` should contain a future date and time. This is validated in the application using the `@Future` annotation.
+- `status` cannot be `NULL`.
+  - `0` = Scheduled
+  - `1` = Completed
+
+#### Derived Values (Not Stored in the Database)
+The following values are calculated from `appointment_time` and are **not persisted** in the database:
+- `endTime` = `appointment_time + 1 hour`
+- `appointmentDate` = Date portion of `appointment_time`
+- `appointmentTimeOnly` = Time portion of `appointment_time`
+
+These values are computed in the application whenever needed.
+
+#### Relationship
+- One **Doctor** can have many **Appointments**.
+- One **Patient** can have many **Appointments**.
+- Each **Appointment** belongs to exactly one **Doctor** and one **Patient**.
+
+
+### Table: admin
+
+| Column | Data Type | Constraints |
+|---------|-----------|-------------|
+| id | BIGINT | PRIMARY KEY, AUTO_INCREMENT |
+| username | VARCHAR(255) | NOT NULL |
+| password | VARCHAR(255) | NOT NULL |
+
+#### Primary Key
+- `id`
+
+#### Foreign Keys
+- None
+
+#### Constraints
+- `id` is the primary key and is automatically generated (`AUTO_INCREMENT`).
+- `username` cannot be `NULL`.
+- `password` cannot be `NULL`.
+- The `password` field is marked as `WRITE_ONLY` in the application, so it is stored in the database but is not included in JSON responses.
+- Passwords should be stored as **hashed values** (e.g., BCrypt) rather than plain text.
 
 ### Table : clinic_locations
 
@@ -77,24 +158,6 @@
 | payment_date | DATETIME | DEFAULT CURRENT_TIMESTAMP |
 
 -----
-
-## Foreign Key Relationships
-
-- appointments.patient_id → patients.patient_id
-- appointments.doctor_id → doctors.doctor_id
-- payments.appointment_id → appointments.appointment_id
-
-  -----
-
-### Constraints
-
-- All primary keys use **AUTO_INCREMENT**.
-- Required fields use **NOT NULL**.
-- Phone numbers and emails should be **UNIQUE** where appropriate.
-- Email and phone format validation should be handled in the application code using Java/Spring Boot.
-- Passwords should be stored as **hashed passwords**, never plain text.
-
-  -----
 
 ### Design Considerations
 
@@ -132,65 +195,42 @@ A prescription is usually issued during a doctor's consultation, so it should re
 
 ### Collection: prescriptions
 
-```json
-{
-  "_id": "ObjectId('64abc1234567890abcdef12')",
-  "appointmentId": 101,
-  "patientId": 25,
-  "doctorId": 8,
-  "prescribedAt": "2026-07-06T10:30:00Z",
-  "medications": [
-    {
-      "name": "Paracetamol",
-      "dosage": "500mg",
-      "frequency": "Twice a day",
-      "duration": "5 days"
-    },
-    {
-      "name": "Vitamin C",
-      "dosage": "1000mg",
-      "frequency": "Once a day",
-      "duration": "7 days"
-    }
-  ],
-  "doctorNotes": "Drink plenty of water and take medicines after meals.",
-  "followUp": {
-    "required": true,
-    "date": "2026-07-13"
-  },
-  "tags": [
-    "fever",
-    "viral",
-    "follow-up"
-  ],
-  "metadata": {
-    "createdBy": "Dr. Sarah Johnson",
-    "lastUpdated": "2026-07-06T10:35:00Z",
-    "version": 1
-  }
-}
-```
+#### Document Structure
 
-### Design Considerations
+| Field | Data Type | Constraints |
+|--------|-----------|-------------|
+| _id | ObjectId (String in Java) | Primary Key, Auto-generated |
+| patientName | String | Required, 3–100 characters |
+| appointmentId | Long | Required |
+| medication | String | Required, 3–100 characters |
+| dosage | String | Required |
+| doctorNotes | String | Optional, Maximum 200 characters |
 
-- **Store only IDs for patients, doctors, and appointments** (`patientId`, `doctorId`, `appointmentId`) instead of embedding the full objects. This avoids data duplication and ensures updates in MySQL remain consistent.
-- **Use embedded documents** for medications, follow-up details, and metadata since they belong exclusively to a single prescription.
-- **Use arrays** for medications and tags because a prescription can contain multiple medicines and multiple labels.
-- **Schema evolution is flexible.** New fields such as `labResults`, `attachments`, `allergies`, or `digitalSignature` can be added to future documents without affecting existing ones.
+#### Validation Rules
 
+- `patientName` cannot be null and must contain **3–100 characters**.
+- `appointmentId` cannot be null.
+- `medication` cannot be null and must contain **3–100 characters**.
+- `dosage` cannot be null.
+- `doctorNotes` is optional but must not exceed **200 characters**.
+- Validation is performed in the Spring Boot application using Jakarta Validation annotations.
 
-### Example Chat Message Document
+#### Example Document
 
 ```json
 {
-  "_id": "ObjectId('64abc9876543210fedcba98')",
+  "_id": "64abc1234567890abcdef12",
+  "patientName": "Rahul Sharma",
   "appointmentId": 101,
-  "senderId": 25,
-  "senderRole": "Patient",
-  "receiverId": 8,
-  "message": "Can I take the medicine after dinner instead of lunch?",
-  "attachments": [],
-  "sentAt": "2026-07-06T18:15:00Z",
-  "isRead": false
+  "medication": "Paracetamol",
+  "dosage": "500 mg twice daily for 5 days",
+  "doctorNotes": "Take the medicine after meals and drink plenty of water."
 }
 ```
+
+#### Design Considerations
+
+- Each prescription document stores the details of **one prescription**.
+- The `appointmentId` links the prescription to an appointment stored in the MySQL database.
+- Only the patient's name is stored in the document. Additional patient information can be retrieved from MySQL using the associated appointment if needed.
+- MongoDB's flexible schema allows new fields (such as `refillCount`, `attachments`, `allergies`, or `followUpDate`) to be added later without modifying existing documents.
