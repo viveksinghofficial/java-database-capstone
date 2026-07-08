@@ -1,65 +1,213 @@
 /* This is the style sheet for the doctorDashboard.html */
-/* 
-**Table Header (`.table-header`)**
+/* ==========================================================
+   Table Header (.table-header)
 
-* Set font size to `24px` for clear emphasis.
-* Use a dark teal color (`#015c5d`) for consistency with the theme.
-* Add `30px` bottom margin and remove right margin.
+   Styles the heading displayed above the patient table.
+   ========================================================== */
+.table-header {
 
-**Table Styling (`table`)**
+    /* Sets a large font size for emphasis */
+    font-size: 24px;
 
-* Make the table full width (`100%`).
-* Collapse borders for clean lines.
-* Use a `sans-serif` font.
-* Add `20px` top margin for spacing.
+    /* Uses the application's primary dark teal color */
+    color: #015c5d;
 
-**Table Head (`thead`)**
+    /* Adds spacing below the heading */
+    margin-bottom: 30px;
 
-* Set a very light dark background (`#33333310`) for header row.
-* Use white text color (`#fff`).
+    /* Removes any right margin */
+    margin-right: 0;
+}
 
-**Table Cells (`td, th`)**
 
-* Apply padding of `12px 16px` for spacing.
-* Center-align the text.
-* Add a subtle bottom border (`1px solid #ddd`).
+/* ==========================================================
+   Patient Table (table)
 
-**Table Row Styling**
+   Defines the overall appearance of the table.
+   ========================================================== */
+table {
 
-* Alternate row colors for better readability:
+    /* Makes the table span the full available width */
+    width: 100%;
 
-  * Even rows: semi-transparent light grey (`#f9f9f959`).
-  * Odd rows: soft white background (`#ffffffc0`).
-* On hover: highlight row with a light teal overlay (`#015c5d39`).
+    /* Removes spacing between adjacent cell borders */
+    border-collapse: collapse;
 
-**Prescription Button (`.prescription-btn`)**
+    /* Uses a clean sans-serif font */
+    font-family: sans-serif;
 
-* Set size to `30px x 30px`.
-* Make it interactive with a pointer cursor.
-* Add transition effects for scale and brightness on hover.
-* On hover:
+    /* Adds spacing above the table */
+    margin-top: 20px;
+}
 
-  * Slightly enlarge (`scale(1.1)`)
-  * Brighten appearance
-* On click: slightly shrink (`scale(0.95)`).
 
-**No Record Message (`.noPatientRecord`)**
+/* ==========================================================
+   Table Header Row (thead)
 
-* Use a `16px` italic grey font to indicate no data gently.
+   Styles the header section of the table.
+   ========================================================== */
+thead {
 
-**Today Button (`.today-btn`)**
+    /* Light transparent dark background */
+    background-color: #33333310;
 
-* Add right margin (`10px`).
-* Add padding (`10px`).
-* Set background color to teal green (`#015c5d`).
+    /* White text for contrast */
+    color: #fff;
+}
 
-**Date Picker (`.date-picker`)**
 
-* Add left margin (`10px`) and top margin (`13px`).
-* Round corners with `8px` radius.
-* Add padding (`10px`) and set fixed height (`30px`).
+/* ==========================================================
+   Table Cells (td, th)
 
----
+   Applies common styling to all table headers and data cells.
+   ========================================================== */
+td,
+th {
 
-Let me know if you'd like a consolidated style guide for the entire HospitalCRM frontend.
- */
+    /* Adds inner spacing for better readability */
+    padding: 12px 16px;
+
+    /* Centers text horizontally */
+    text-align: center;
+
+    /* Creates a subtle separator between rows */
+    border-bottom: 1px solid #ddd;
+}
+
+
+/* ==========================================================
+   Alternate Row Colors
+
+   Improves readability using zebra striping.
+   ========================================================== */
+
+/* Even-numbered rows */
+tbody tr:nth-child(even) {
+
+    /* Semi-transparent light grey */
+    background-color: #f9f9f959;
+}
+
+/* Odd-numbered rows */
+tbody tr:nth-child(odd) {
+
+    /* Soft white background */
+    background-color: #ffffffc0;
+}
+
+
+/* ==========================================================
+   Table Row Hover Effect
+
+   Highlights a row when the mouse hovers over it.
+   ========================================================== */
+tbody tr:hover {
+
+    /* Light transparent teal highlight */
+    background-color: #015c5d39;
+}
+
+
+/* ==========================================================
+   Prescription Button (.prescription-btn)
+
+   Used to open or view a patient's prescription.
+   ========================================================== */
+.prescription-btn {
+
+    /* Sets fixed button dimensions */
+    width: 30px;
+    height: 30px;
+
+    /* Indicates the element is clickable */
+    cursor: pointer;
+
+    /* Smooth animation for hover and click effects */
+    transition: transform 0.2s ease,
+                filter 0.2s ease;
+}
+
+
+/* ==========================================================
+   Prescription Button Hover
+
+   Slightly enlarges and brightens the button.
+   ========================================================== */
+.prescription-btn:hover {
+
+    /* Enlarges the button */
+    transform: scale(1.1);
+
+    /* Increases brightness */
+    filter: brightness(1.2);
+}
+
+
+/* ==========================================================
+   Prescription Button Active
+
+   Slightly shrinks the button while clicked.
+   ========================================================== */
+.prescription-btn:active {
+
+    /* Creates a pressed effect */
+    transform: scale(0.95);
+}
+
+
+/* ==========================================================
+   No Patient Record Message (.noPatientRecord)
+
+   Displayed when no patient records are available.
+   ========================================================== */
+.noPatientRecord {
+
+    /* Medium-sized text */
+    font-size: 16px;
+
+    /* Italic style for a softer appearance */
+    font-style: italic;
+
+    /* Neutral grey text color */
+    color: grey;
+}
+
+
+/* ==========================================================
+   Today's Appointments Button (.today-btn)
+
+   Button used to filter today's appointments.
+   ========================================================== */
+.today-btn {
+
+    /* Adds spacing from adjacent elements */
+    margin-right: 10px;
+
+    /* Provides comfortable inner spacing */
+    padding: 10px;
+
+    /* Primary dashboard teal color */
+    background-color: #015c5d;
+}
+
+
+/* ==========================================================
+   Date Picker (.date-picker)
+
+   Allows doctors to filter appointments by date.
+   ========================================================== */
+.date-picker {
+
+    /* Adds spacing from nearby controls */
+    margin-left: 10px;
+    margin-top: 13px;
+
+    /* Rounded corners */
+    border-radius: 8px;
+
+    /* Comfortable inner spacing */
+    padding: 10px;
+
+    /* Fixed control height */
+    height: 30px;
+}

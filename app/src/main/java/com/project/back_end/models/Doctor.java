@@ -12,7 +12,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import jakarta.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -67,7 +66,6 @@ public class Doctor {
 
     @NotNull(message = "Email field cannot be null")
     @Email(message = "Invalid email format")
-    @Column(unique = true)
     private String email;
 
 // 5. 'password' field:
@@ -93,7 +91,6 @@ public class Doctor {
     @NotNull(message = "Phone field cannot be null")
     @Pattern(regexp = "^[0-9]{10}$",
              message = "Phone number must contain exactly 10 digits")
-    @Column(unique = true)
     private String phone;
 
 // 7. 'availableTimes' field:

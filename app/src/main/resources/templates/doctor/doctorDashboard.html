@@ -1,101 +1,212 @@
-<!-- doctorDashboard.html -->
+<!-- ==========================================================
+     File: doctorDashboard.html
+     Purpose:
+     Displays the Doctor Dashboard interface where doctors can
+     search patients, filter appointments, and access patient
+     prescriptions.
+========================================================== -->
 
-<!-- 
-Step-by-Step Explanation of `doctorDashboard.html`
-This file defines the Doctor Dashboard interface, allowing doctors to view and manage their patient appointments, search records, and access patient prescriptions.
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-1. Label the File
+<head>
 
-   * Add a comment at the top to identify the file as `doctorDashboard.html`.
+    <!-- ======================================================
+         Character Encoding
+         Ensures proper rendering of all characters and symbols.
+    ======================================================= -->
+    <meta charset="UTF-8">
 
-2. Declare the Document Type
+    <!-- ======================================================
+         Favicon
+         Displays the application logo in the browser tab.
+    ======================================================= -->
+    <link rel="icon"
+          type="image/png"
+          th:href="@{/assets/images/logo/logo.png}" />
 
-   * Use `<!DOCTYPE html>` to define the document as an HTML5 file for consistent behavior across modern browsers.
+    <!-- ======================================================
+         Page Title
+         Appears in the browser tab.
+    ======================================================= -->
+    <title>Doctor Dashboard</title>
 
-3. Begin the HTML Document with Thymeleaf Namespace
+    <!-- ======================================================
+         CSS Stylesheets
 
-   * The `<html>` tag includes `xmlns:th="http://www.thymeleaf.org"` to enable Thymeleaf-specific attributes used in Spring Boot applications.
+         1. adminDashboard.css
+            - Shared dashboard layout and components.
 
-4. Head Section – Metadata and Assets
+         2. doctorDashboard.css
+            - Doctor-specific styling.
 
-   * Start the `<head>` section to include essential meta information, styles, and scripts.
+         3. style.css
+            - Common styles used throughout the application.
+    ======================================================= -->
+    <link rel="stylesheet" th:href="@{/css/adminDashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/doctorDashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 
-5. Set Character Encoding
+    <!-- ======================================================
+         JavaScript Files
 
-   * Use `<meta charset="UTF-8">` to support all text characters and prevent encoding issues.
+         defer
+         -----
+         Loads scripts after HTML parsing to improve performance.
 
-6. Set the Favicon
+         render.js
+         - Handles common rendering functionality.
 
-   * Add a favicon using Thymeleaf pathing: 
-     `<link rel="icon" type="image/png" th:href="@{/assets/images/logo/logo.png}" />`
+         util.js
+         - Contains reusable helper functions.
 
-7. Set the Page Title
+         header.js
+         - Dynamically loads the header.
 
-   * Title the page `"Doctor Dashboard"` to show it in the browser tab.
+         footer.js
+         - Dynamically loads the footer.
 
-8. Link CSS Stylesheets
+         doctorDashboard.js
+         - Contains Doctor Dashboard functionality.
+         - Loaded as a JavaScript module.
+    ======================================================= -->
+    <script th:src="@{/js/render.js}" defer></script>
+    <script th:src="@{/js/util.js}" defer></script>
+    <script th:src="@{/js/header.js}" defer></script>
+    <script th:src="@{/js/footer.js}" defer></script>
+    <script type="module"
+            th:src="@{/js/doctorDashboard.js}"
+            defer></script>
 
-   * Include necessary CSS files:
-     - `adminDashboard.css` (for shared layout styles with admin interface)
-     - `doctorDashboard.css` (for doctor-specific styles)
-     - `style.css` (for general UI components)
+</head>
 
-9. Link JavaScript Files (with `defer`)
+<!-- ==========================================================
+     Body
 
-   * Load scripts using Thymeleaf's `th:src` and `defer` attribute to prevent blocking rendering:
-     - `render.js` – Handles common rendering logic.
-     - `util.js` – Provides utility functions.
-     - `header.js` and `footer.js` – Dynamically inject header/footer.
-     - `doctorDashboard.js` – Contains dashboard logic for doctor functionality, loaded as a module.
+     onload="renderContent()"
+     ------------------------
+     Calls the renderContent() function after the page finishes
+     loading.
+========================================================== -->
+<body onload="renderContent()">
 
-10. Close the Head and Begin the Body
+    <!-- ======================================================
+         Main Container
 
-    * Begin the visible part of the webpage using `<body onload="renderContent()">`, which calls a JavaScript function after loading.
+         Wraps the complete Doctor Dashboard.
+    ======================================================= -->
+    <div class="container">
 
-11. Create the Main Container
+        <!-- ==================================================
+             Wrapper
 
-    * Use `<div class="container">` to wrap all content and structure the page.
+             Organizes the page structure.
+        =================================================== -->
+        <div class="wrapper">
 
-12. Add a Wrapper for Page Content
+            <!-- ==============================================
+                 Header Placeholder
 
-    * Nest elements inside a `wrapper` div for structured layout control.
+                 Header content is inserted dynamically using
+                 JavaScript.
+            =============================================== -->
+            <div id="header"></div>
 
-13. Insert a Header Placeholder
+            <!-- ==============================================
+                 Main Content Area
 
-    * Add `<div id="header"></div>` where the dynamic header will be injected.
+                 Contains all dashboard components.
+            =============================================== -->
+            <div class="main-content">
 
-14. Define the Main Content Area
+                <!-- ==========================================
+                     Search Section
 
-    * Use `<div class="main-content">` for the central section of the dashboard.
+                     Allows doctors to search patients,
+                     appointments, or other custom data.
+                =========================================== -->
+                <input
+                    type="text"
+                    id="searchBar"
+                    class="searchBar"
+                    placeholder="Search Bar for custom output"
+                />
 
-15. Add a Search Bar
+                <!-- ==========================================
+                     Filter Controls
 
-    * Include an input field with `id="searchBar"` for doctors to search patients or data:
-      ```html
-      <input type="text" id="searchBar" class="searchBar" placeholder="Search Bar for custom output" />
-      ```
+                     todayButton
+                     -----------
+                     Displays today's appointments.
 
-16. Add Filter Controls
+                     datePicker
+                     ----------
+                     Filters appointments by selected date.
+                =========================================== -->
+                <div class="filter-container">
 
-    * Include a filter section:
-      - A button (`#todayButton`) to view today's appointments.
-      - A date picker (`#datePicker`) to select specific dates.
+                    <button id="todayButton">
+                        Today's Appointments
+                    </button>
 
-17. Add a Patient Table
+                    <input
+                        type="date"
+                        id="datePicker"
+                    />
 
-    * Display a table to list patient data:
-      - Headers: Patient ID, Name, Phone No., Email, and Prescription.
-      - Body: `<tbody id="patientTableBody"></tbody>` for dynamic content insertion.
+                </div>
 
-18. Insert a Footer Placeholder
+                <!-- ==========================================
+                     Patient Table
 
-    * Use `<div id="footer"></div>` to load a common footer via JavaScript.
+                     Displays patient information and allows
+                     doctors to access prescriptions.
 
-19. Close the Wrapper and Container
+                     Columns:
+                     - Patient ID
+                     - Name
+                     - Phone Number
+                     - Email
+                     - Prescription
+                =========================================== -->
+                <table class="patient-table">
 
-    * Close `wrapper` and `container` divs to maintain structural integrity.
+                    <thead>
+                        <tr>
+                            <th>Patient ID</th>
+                            <th>Name</th>
+                            <th>Phone No.</th>
+                            <th>Email</th>
+                            <th>Prescription</th>
+                        </tr>
+                    </thead>
 
-20. End the Body and HTML
+                    <!-- ======================================
+                         Dynamic Table Body
 
-    * Properly close the `<body>` and `<html>` tags to complete the document.
- -->
+                         Patient records are inserted here
+                         using JavaScript.
+                    ======================================= -->
+                    <tbody id="patientTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- ==============================================
+                 Footer Placeholder
+
+                 Footer is loaded dynamically using JavaScript.
+            =============================================== -->
+            <div id="footer"></div>
+
+        </div>
+        <!-- End Wrapper -->
+
+    </div>
+    <!-- End Container -->
+
+</body>
+
+</html>

@@ -1,109 +1,188 @@
 <!-- adminDashboard.html -->
 
-<!-- 
-Step-by-Step Explanation of `adminDashboard.html`
-This file creates the Admin Dashboard interface for managing doctor-related data 
-with search, filter, and modal functionality.
+<!-- ============================================================
+     File: adminDashboard.html
+
+     Description:
+     Admin Dashboard page for the Smart Clinic Management System.
+
+     Purpose:
+     - Displays all doctor information.
+     - Provides search functionality.
+     - Allows filtering by time and specialty.
+     - Loads reusable header and footer dynamically.
+     - Displays doctor details using dynamic cards.
+     - Uses a modal for viewing/editing additional information.
+============================================================= -->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <!-- ========================================================
+         Basic Page Metadata
+    ========================================================= -->
+
+    <!-- Character encoding for universal text support -->
+    <meta charset="UTF-8">
+
+    <!-- Responsive viewport for mobile and desktop devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Browser tab icon -->
+    <link rel="icon"
+          type="image/png"
+          th:href="@{/assets/images/logo/logo.png}">
+
+    <!-- Browser page title -->
+    <title>Admin Dashboard</title>
 
 
-1. Declare the Document Type
+    <!-- ========================================================
+         CSS Stylesheets
+    ========================================================= -->
 
-   * Use `<!DOCTYPE html>` to ensure HTML5 standards for consistent rendering across browsers.
+    <!-- Dashboard-specific styling -->
+    <link rel="stylesheet"
+          th:href="@{/css/adminDashboard.css}">
 
-2. Begin the HTML Document with Thymeleaf Namespace
+    <!-- Global styles used throughout the application -->
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
 
-   * Add the `<html>` tag with `xmlns:th="http://www.thymeleaf.org"` to allow Thymeleaf-specific attributes in Spring-based apps.
 
-3. Head Section – Metadata and Resources
+    <!-- ========================================================
+         Global JavaScript Files
+         Loaded with defer to avoid blocking page rendering.
+    ========================================================= -->
 
-   * Open the `<head>` section for meta info and links to assets and scripts.
+    <!-- Handles common rendering functions -->
+    <script th:src="@{/js/render.js}" defer></script>
 
-4. Set Character Encoding
+    <!-- Utility/helper functions -->
+    <script th:src="@{/js/util.js}" defer></script>
 
-   * Use UTF-8 to support all characters and prevent encoding issues.
+    <!-- Dynamically inserts the website header -->
+    <script th:src="@{/js/header.js}" defer></script>
 
-5. Set the Favicon
+    <!-- Dynamically inserts the website footer -->
+    <script th:src="@{/js/footer.js}" defer></script>
 
-   * Add a favicon for browser tabs using Thymeleaf pathing: 
-     `<link rel="icon" type="image/png" th:href="@{/assets/images/logo/logo.png}" />`.
+</head>
 
-6. Set the Page Title
+<!-- ============================================================
+     Body
+     renderContent() executes once the page finishes loading.
+============================================================= -->
+<body onload="renderContent()">
 
-   * Give the page a title, e.g., `"Admin Dashboard"`, which will show in the browser tab.
+    <!-- Main page container -->
+    <div class="container">
 
-7. Link CSS Stylesheets
+        <!-- Wrapper for consistent spacing and alignment -->
+        <div class="wrapper">
 
-   * Include dashboard-specific styles and global site-wide styles:
-     - `adminDashboard.css` for layout and design of this page.
-     - `style.css` for shared UI components.
+            <!-- ================================================
+                 Dynamic Header
+                 Content inserted through JavaScript.
+            ================================================= -->
+            <div id="header"></div>
 
-8. Link JavaScript Files (with `defer`)
 
-   * Use Thymeleaf's `th:src` to include JS components and utilities:
-     - `render.js` (rendering content)
-     - `util.js` (utility functions)
-     - `header.js` and `footer.js` (for dynamic header/footer)
-   * Use `defer` so scripts execute after the HTML is fully parsed.
+            <!-- ================================================
+                 Main Dashboard Section
+            ================================================= -->
+            <main class="main-content">
 
-9. Close the Head and Begin the Body
+                <!-- ============================================
+                     Search and Filter Controls
+                ============================================= -->
+                <section class="dashboard-controls">
 
-    * Start the visible part of the webpage. `onload="renderContent()"` is used to call a function when the page is ready.
+                    <!-- Search doctors by name or keyword -->
+                    <input
+                        type="text"
+                        id="searchBar"
+                        placeholder="Search doctors...">
 
-10. Create the Container
+                    <!-- Filter doctors by available session -->
+                    <select id="timeFilter">
+                        <option value="">All Times</option>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
 
-    * Add a `div` with class `container` for layout control.
+                    <!-- Filter doctors by medical specialty -->
+                    <select id="specialtyFilter">
+                        <option value="">All Specialties</option>
+                        <option value="Cardiologist">Cardiologist</option>
+                        <option value="Dentist">Dentist</option>
+                        <option value="Dermatologist">Dermatologist</option>
+                        <option value="Neurologist">Neurologist</option>
+                        <option value="Orthopedic">Orthopedic</option>
+                        <option value="Pediatrician">Pediatrician</option>
+                        <option value="Psychiatrist">Psychiatrist</option>
+                        <option value="General Physician">General Physician</option>
+                    </select>
 
-11. Add a Wrapper Inside the Container
+                </section>
 
-    * Wrap page elements with a `wrapper` div to maintain consistent spacing and organization.
 
-12. Insert a Header Placeholder
+                <!-- ============================================
+                     Dynamic Doctor Cards
+                     JavaScript injects doctor information here.
+                ============================================= -->
+                <div id="content"></div>
 
-    * Add `<div id="header"></div>` for injecting the header via JavaScript.
+            </main>
 
-13. Define the Main Section
 
-    * Use `<main class="main-content">` for the central dashboard area.
+            <!-- ================================================
+                 Dynamic Footer
+                 Loaded through JavaScript.
+            ================================================= -->
+            <div id="footer"></div>
 
-14. Add a Search Bar
+        </div>
 
-    * Add an input field with `id="searchBar"` for admin to search content dynamically.
+    </div>
 
-15. Add Filter Dropdowns
 
-    * Use two `<select>` elements:
-      - One for time (AM/PM).
-      - One for filtering by medical specialty (Cardiologist, Dentist, etc.).
+    <!-- ========================================================
+         Modal Window
+         Used for displaying detailed doctor information,
+         forms, or other popup content.
+    ========================================================= -->
+    <div id="modal" class="modal">
 
-16. Add Content Display Area
+        <div class="modal-content">
 
-    * Insert a `<div id="content"></div>` for dynamic injection of doctor cards or data.
+            <!-- Close button -->
+            <span class="close">&times;</span>
 
-17. Add a Footer Placeholder
+            <!-- Dynamic modal body -->
+            <div id="modal-body"></div>
 
-    * Use `<div id="footer"></div>` for a JavaScript-rendered footer.
+        </div>
 
-18. Add Modal Structure
+    </div>
 
-    * Include a modal with:
-      - A close button (`&times;`)
-      - A content area (`#modal-body`) for displaying popup information or forms.
 
-19. Include Page-Specific JavaScript Modules
+    <!-- ========================================================
+         Page-Specific JavaScript Modules
+    ========================================================= -->
 
-    * Load JavaScript specific to the admin dashboard:
-      - `adminDashboard.js` for dashboard logic.
-      - `doctorCard.js` for rendering doctor information cards.
-    * Use `type="module"` and `defer` for modern and non-blocking loading.
+    <!-- Handles dashboard functionality -->
+    <script type="module"
+            th:src="@{/js/adminDashboard.js}"
+            defer></script>
 
-    HINT:
-        `<script type="module" src="../../static/js/adminDashboard.js" defer></script>`
-        `<script type="module" src="../../static/js/doctorDashboard.js" defer></script>`
-        
-        
-20. Close the Body and HTML Tags
+    <!-- Creates and renders doctor cards -->
+    <script type="module"
+            th:src="@{/js/doctorCard.js}"
+            defer></script>
 
-    * Finish the structure by properly closing all tags.
+</body>
 
- -->
-
+</html>
